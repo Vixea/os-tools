@@ -1,9 +1,5 @@
 # 🛠️ OS Tools - Modern System State Management
 
-[![Build Status](
-
-![image](.github/tools_logo.png)
-
 ## 📦 Core Tools
 
 This repository provides two powerful Rust-based tools for managing `.stone` packages, the native package format for Serpent OS:
