@@ -2,7 +2,7 @@
 
 ## 📦 Core Tools
 
-This repository provides two powerful Rust-based tools for managing `.stone` packages, the native package format for Serpent OS:
+This repository provides two powerful Rust-based tools for managing `.stone` packages, the native package format for AerynOS:
 
 - **moss**: Advanced package & system state manager with atomic transactions and content deduplication
 - **boulder**: Modern package building tool with containerized builds and intelligent package splitting
@@ -65,7 +65,7 @@ cd ~/repos/serpent-os/
 git clone https://github.com/serpent-os/tools.git
 cd tools/
 
-# Install a few prerequisites (this how you'd do it on Serpent OS)
+# Install a few prerequisites (this how you'd do it on AerynOS)
 sudo moss it binutils glibc-devel linux-headers clang tar
 
 # remember to add ~/.cargo/bin to your $PATH if this is how you installed rustfmt

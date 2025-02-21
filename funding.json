@@ -44,7 +44,7 @@
       {
         "guid": "kofi",
         "type": "payment-provider",
-        "address": "https://ko-fi.com/serpentos",
+        "address": "https://ko-fi.com/AerynOS",
         "description": "Ko-fi subscriptions/one-time-payments/etc"
       }
     ],
