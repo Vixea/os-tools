@@ -12,7 +12,7 @@ use super::Source;
 pub fn source(upstream: &Url) -> Option<Source> {
     let filename = util::uri_file_name(upstream);
 
-    let regex = Regex::new(r"^([a-zA-Z0-9-]+)-([a-zA-Z0-9._-]+)\.(zip|tar|sh|bin\.*)").ok()?;
+    let regex = Regex::new(r"^([a-zA-Z0-9_-]+)-([a-zA-Z0-9._-]+)\.(zip|tar|sh|bin\.*)").ok()?;
     let captures = regex.captures(filename)?;
 
     let name = captures.get(1)?.as_str().to_owned();
