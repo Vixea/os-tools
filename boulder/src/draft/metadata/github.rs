@@ -30,6 +30,7 @@ pub fn source(upstream: &Url) -> Option<Source> {
             name: project.to_lowercase(),
             version,
             homepage: format!("https://github.com/{owner}/{project}"),
+            uri: upstream.to_string(),
         });
     }
 
