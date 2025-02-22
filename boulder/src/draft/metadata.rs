@@ -8,6 +8,7 @@ use super::Upstream;
 
 mod basic;
 mod github;
+mod pypi;
 
 #[derive(Default)]
 pub struct Metadata {
@@ -33,6 +34,7 @@ impl Metadata {
                 if let Some(matched) = match matcher {
                     Matcher::Basic => basic::source(&upstream.uri),
                     Matcher::Github => github::source(&upstream.uri),
+                    Matcher::Pypi => pypi::source(&upstream.uri),
                 } {
                     source = matched;
                     break;
@@ -62,8 +64,9 @@ impl Metadata {
 enum Matcher {
     Basic,
     Github,
+    Pypi,
 }
 
 impl Matcher {
-    const ALL: &'static [Self] = &[Self::Github, Self::Basic];
+    const ALL: &'static [Self] = &[Self::Github, Self::Pypi, Self::Basic];
 }
