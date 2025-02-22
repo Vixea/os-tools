@@ -20,6 +20,7 @@ pub struct Source {
     pub name: String,
     pub version: String,
     pub homepage: String,
+    pub uri: String,
 }
 
 impl Metadata {
@@ -45,7 +46,15 @@ impl Metadata {
     pub fn upstreams(&self) -> String {
         self.upstreams
             .iter()
-            .map(|Upstream { uri, hash }| format!("    - {uri} : {hash}"))
+            .enumerate()
+            .map(|(i, Upstream { uri, hash })| {
+                let uri_to_use = if i == 0 && !self.source.uri.is_empty() {
+                    &self.source.uri
+                } else {
+                    uri.as_str()
+                };
+                format!("    - {uri_to_use} : {hash}")
+            })
             .join("\n")
     }
 }

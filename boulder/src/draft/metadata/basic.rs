@@ -24,5 +24,6 @@ pub fn source(upstream: &Url) -> Option<Source> {
         name,
         version,
         homepage: homepage.to_owned(),
+        uri: upstream.to_string(),
     })
 }
