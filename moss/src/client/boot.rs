@@ -167,7 +167,7 @@ pub fn synchronize(client: &Client, state: &State) -> Result<(), Error> {
     let fp = fs::read_to_string(root.join("usr").join("lib").join("os-release"))?;
     let os_release = OsRelease::from_str(&fp)?;
     let schema = Schema::Blsforme {
-        os_release: &os_release,
+        os_release: Box::new(os_release),
     };
 
     // Grab the entries for the new state
