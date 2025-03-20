@@ -1,5 +1,5 @@
 [package]
-name = "serpent_buildinfo"
+name = "tools_buildinfo"
 edition.workspace = true
 version.workspace = true
 rust-version.workspace = true

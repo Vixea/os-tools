@@ -25,10 +25,10 @@ pub fn handle(command: Command) {
 
 /// Print program version
 pub fn print() {
-    println!("boulder {}", serpent_buildinfo::get_simple_version());
+    println!("boulder {}", tools_buildinfo::get_simple_version());
 }
 
 /// Print additional build information
 pub fn print_full() {
-    println!("boulder {}", serpent_buildinfo::get_full_version());
+    println!("boulder {}", tools_buildinfo::get_full_version());
 }
