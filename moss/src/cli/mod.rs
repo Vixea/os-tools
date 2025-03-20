@@ -30,7 +30,7 @@ mod version;
 /// Generate the CLI command structure
 fn command() -> Command {
     Command::new("moss")
-        .about("Next generation package manager")
+        .about("Advanced system state manager")
         .arg(
             Arg::new("verbose")
                 .short('v')
