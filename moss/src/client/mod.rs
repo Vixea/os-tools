@@ -1,4 +1,5 @@
 // SPDX-FileCopyrightText: Copyright © 2020-2025 Serpent OS Developers
+// SPDX-FileCopyrightText: Copyright © 2025 AerynOS Developers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -822,19 +823,31 @@ fn record_state_id(root: &Path, state: state::Id) -> Result<(), Error> {
 }
 
 /// Record the operating system release info
+/// Requires `os-info.json` to be present in the root, otherwise
+/// we'll somewhat spitefully generate a generic os-release.
 fn record_os_release(root: &Path) -> Result<(), Error> {
-    let os_release = format!(
-        r#"NAME="Serpent OS"
-VERSION="{version}"
-ID="serpentos"
-VERSION_CODENAME={version}
-VERSION_ID="{version}"
-PRETTY_NAME="Serpent OS {version}"
-ANSI_COLOR="1;35"
-HOME_URL="https://serpentos.com"
-BUG_REPORT_URL="https://github.com/serpent-os""#,
-        version = "0.24.6"
-    );
+    let os_info_path = root.join("usr").join("lib").join("os-info.json");
+    let os_release_data = match os_info::load_os_info_from_path(os_info_path) {
+        Ok(ref info) => {
+            let os_rel: os_info::OsRelease = info.into();
+            os_rel.to_string()
+        }
+        Err(_) => {
+            // Fallback to a generic os-release to break the system
+            // TLDR: Implement your OS properly.
+            format!(
+                r#"NAME="Unbranded OS"
+                VERSION="{version}"
+                ID="unbranded-os"
+                VERSION_CODENAME={version}
+                VERSION_ID="{version}"
+                PRETTY_NAME="Unbranded OS {version} - I forgot to add os-info.json"
+                HOME_URL="https://github.com/AerynOS/os-info"
+                BUG_REPORT_URL="https://.com""#,
+                version = "no-os-info.json"
+            )
+        }
+    };
 
     // It's possible this doesn't exist if
     // we remove all packages (=
@@ -843,7 +856,7 @@ BUG_REPORT_URL="https://github.com/serpent-os""#,
         fs::create_dir(&dir)?;
     }
 
-    fs::write(dir.join("os-release"), os_release)?;
+    fs::write(dir.join("os-release"), os_release_data)?;
 
     Ok(())
 }

@@ -51,6 +51,7 @@ nix = { version = "0.27.1", features = [
     "signal",
     "term",
 ] }
+os-info = { git = "https://github.com/AerynOS/os-info", rev = "bf08ac4067f64ba844ab26e548cf9f706726ff9b" }
 petgraph = "0.6.5"
 rayon = "1.10.0"
 regex = "1.10.5"

@@ -1915,6 +1915,7 @@ dependencies = [
  "libsqlite3-sys",
  "log",
  "nix 0.27.1",
+ "os-info",
  "rayon",
  "reqwest",
  "serde",
