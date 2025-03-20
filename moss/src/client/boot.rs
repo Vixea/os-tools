@@ -37,6 +37,9 @@ pub enum Error {
     #[error("io: {0}")]
     IO(#[from] io::Error),
 
+    #[error("os_info: {0}")]
+    OsInfo(#[from] os_info::Error),
+
     #[error("os_release: {0}")]
     OsRelease(#[from] os_release::Error),
 
@@ -137,6 +140,25 @@ fn states_except_new(client: &Client, state: &State) -> Result<Vec<State>, db::E
     Ok(states)
 }
 
+/// Generate a schema for the root
+fn os_schema_for_root(root: &Path) -> Result<Schema, Error> {
+    let os_info_path = root.join("usr").join("lib").join("os-info.json");
+    let os_release_path = root.join("usr").join("lib").join("os-release");
+
+    if os_info_path.exists() {
+        let info = os_info::load_os_info_from_path(&os_info_path)?;
+        Ok(Schema::OsInfo {
+            os_info: Box::new(info),
+        })
+    } else {
+        let os_release = fs::read_to_string(os_release_path)?;
+        let os_release = OsRelease::from_str(&os_release)?;
+        Ok(Schema::Blsforme {
+            os_release: Box::new(os_release),
+        })
+    }
+}
+
 pub fn synchronize(client: &Client, state: &State) -> Result<(), Error> {
     let root = client.installation.root.clone();
     let is_native = root.to_string_lossy() == "/";
@@ -163,13 +185,7 @@ pub fn synchronize(client: &Client, state: &State) -> Result<(), Error> {
         return Ok(());
     }
 
-    // Read the os-release file we created
-    // TODO: This needs per-state generation for the VERSION bits!
-    let fp = fs::read_to_string(root.join("usr").join("lib").join("os-release"))?;
-    let os_release = OsRelease::from_str(&fp)?;
-    let schema = Schema::Blsforme {
-        os_release: Box::new(os_release),
-    };
+    let global_schema = os_schema_for_root(&root)?;
 
     // Grab the entries for the new state
     let mut all_kernels = vec![];
@@ -177,7 +193,7 @@ pub fn synchronize(client: &Client, state: &State) -> Result<(), Error> {
     for state in all_states.iter() {
         let layouts = layouts_for_state(client, state)?;
         let local_kernels = kernel_files_from_state(&layouts, &kernel_pattern);
-        let mapped = schema.discover_system_kernels(local_kernels.into_iter())?;
+        let mapped = global_schema.discover_system_kernels(local_kernels.into_iter())?;
         all_kernels.push((mapped, state.id));
     }
 
@@ -198,15 +214,19 @@ pub fn synchronize(client: &Client, state: &State) -> Result<(), Error> {
                         return None;
                     }
 
-                    Some(
-                        Entry::new(k)
-                            .with_cmdline(CmdlineEntry {
-                                name: "---fstx---".to_owned(),
-                                snippet: format!("moss.fstx={state_id}"),
-                            })
-                            .with_state_id(i32::from(*state_id))
-                            .with_sysroot(sysroot),
-                    )
+                    let local_schema = os_schema_for_root(&sysroot).ok();
+                    let entry = Entry::new(k)
+                        .with_cmdline(CmdlineEntry {
+                            name: "---fstx---".to_owned(),
+                            snippet: format!("moss.fstx={state_id}"),
+                        })
+                        .with_state_id(i32::from(*state_id))
+                        .with_sysroot(sysroot);
+
+                    match local_schema {
+                        Some(schema) => Some(entry.with_schema(schema)),
+                        None => Some(entry),
+                    }
                 })
                 .collect::<Vec<_>>()
         })
@@ -231,9 +251,9 @@ pub fn synchronize(client: &Client, state: &State) -> Result<(), Error> {
     // Only allow mounting pre-sync for a native run
     if is_native {
         let _mounts = manager.mount_partitions()?;
-        manager.sync(&schema)?;
+        manager.sync(&global_schema)?;
     } else {
-        manager.sync(&schema)?;
+        manager.sync(&global_schema)?;
     }
 
     Ok(())
