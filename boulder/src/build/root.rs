@@ -190,6 +190,7 @@ const BASE_PACKAGES: &[&str] = &[
     "layout",
     "libarchive",
     "linux-headers",
+    "os-info",
     "pkgconf",
     "sed",
     "util-linux",
