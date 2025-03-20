@@ -9,7 +9,7 @@ edition = "2021"
 rust-version = "1.80"
 
 [workspace.dependencies]
-blsforme = { git = "https://github.com/AerynOS/blsforme.git", rev = "6e7e2f7e68d541f3f855543622b635dddbbb06a6" }
+blsforme = { git = "https://github.com/AerynOS/blsforme.git", rev = "bac61c0305dd7cc54d9a9fb32f1aca78be25c574" }
 bytes = "1.6.0"
 chrono = "0.4.38"
 clap = { version = "4.5.8", features = ["derive", "string"] }
@@ -51,7 +51,7 @@ nix = { version = "0.27.1", features = [
     "signal",
     "term",
 ] }
-os-info = { git = "https://github.com/AerynOS/os-info", rev = "bf08ac4067f64ba844ab26e548cf9f706726ff9b" }
+os-info = { git = "https://github.com/AerynOS/os-info", rev = "862808097f40ab5c04bb4c9a7ea0869acc05d339" }
 petgraph = "0.6.5"
 rayon = "1.10.0"
 regex = "1.10.5"
