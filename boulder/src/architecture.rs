@@ -19,7 +19,7 @@ pub const fn host() -> Architecture {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, strum::Display)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, strum::Display, strum_macros::EnumIter)]
 #[strum(serialize_all = "lowercase")]
 pub enum Architecture {
     X86_64,
@@ -41,8 +41,12 @@ impl Architecture {
 pub enum BuildTarget {
     #[display("{_0}")]
     Native(Architecture),
+    #[display("{_0}")]
+    Cross(Architecture),
     #[display("emul32/{_0}")]
     Emul32(Architecture),
+    #[display("emul32/{_0}")]
+    CrossEmul32(Architecture),
 }
 
 impl BuildTarget {
@@ -53,7 +57,9 @@ impl BuildTarget {
     pub fn host_architecture(&self) -> Architecture {
         match self {
             BuildTarget::Native(arch) => *arch,
+            BuildTarget::Cross(arch) => *arch,
             BuildTarget::Emul32(arch) => *arch,
+            BuildTarget::CrossEmul32(arch) => *arch,
         }
     }
 }

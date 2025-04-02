@@ -19,7 +19,7 @@ enum Action {
     // Root
     List,
     // Root, Id, Url, Comment
-    Add(String, Url, String, Priority),
+    Add(String, Url, String, String, Priority),
     // Root, Id
     Remove(String),
     // Root, Id
@@ -46,6 +46,14 @@ pub fn command() -> Command {
                         .action(ArgAction::Set)
                         .help("Set the comment for the repository")
                         .value_parser(clap::value_parser!(String)),
+                )
+                .arg(
+                    Arg::new("arch")
+                    .short('A')
+                    .help("Repository ISA")
+                    .action(ArgAction::Set)
+                    .default_value("x86_64")
+                    .value_parser(clap::value_parser!(String)),
                 )
                 .arg(
                     Arg::new("priority")
@@ -97,6 +105,7 @@ pub fn handle(args: &ArgMatches, installation: Installation) -> Result<(), Error
         Some(("add", cmd_args)) => Action::Add(
             cmd_args.get_one::<String>("NAME").cloned().unwrap(),
             cmd_args.get_one::<Url>("URI").cloned().unwrap(),
+            cmd_args.get_one::<String>("arch").cloned().unwrap(),
             cmd_args.get_one::<String>("comment").cloned().unwrap(),
             Priority::new(*cmd_args.get_one::<u64>("priority").unwrap()),
         ),
@@ -111,7 +120,7 @@ pub fn handle(args: &ArgMatches, installation: Installation) -> Result<(), Error
     // dispatch to runtime handler function
     match handler {
         Action::List => list(installation, config),
-        Action::Add(name, uri, comment, priority) => add(installation, config, name, uri, comment, priority),
+        Action::Add(name, uri, arch, comment, priority) => add(installation, config, name, uri, arch, comment, priority),
         Action::Remove(name) => remove(installation, config, name),
         Action::Update(name) => update(installation, config, name),
         Action::Enable(name) => enable(installation, config, name),
@@ -125,6 +134,7 @@ fn add(
     config: config::Manager,
     name: String,
     uri: Url,
+    arch: String,
     comment: String,
     priority: Priority,
 ) -> Result<(), Error> {
@@ -137,6 +147,7 @@ fn add(
         Repository {
             description: comment,
             uri,
+            arch,
             priority,
             active: true,
         },

@@ -42,6 +42,7 @@ impl Id {
 pub struct Repository {
     pub description: String,
     pub uri: Url,
+    pub arch: String,
     pub priority: Priority,
     #[serde(default = "default_as_true")]
     pub active: bool,
@@ -59,6 +60,8 @@ pub struct Cached {
     pub repository: Repository,
     pub db: meta::Database,
 }
+
+
 
 /// The selection priority of a [`Repository`]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display, Into)]

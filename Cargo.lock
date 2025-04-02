@@ -407,6 +407,7 @@ dependencies = [
  "stone",
  "stone_recipe",
  "strum",
+ "strum_macros",
  "thiserror 2.0.12",
  "thread-priority",
  "tokio",

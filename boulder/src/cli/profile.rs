@@ -34,7 +34,7 @@ pub enum Subcommand {
         help = "profile repositories",
         value_parser = parse_repository,
         help = "repository to add to profile, can be passed multiple times",
-        long_help = "repository to add to profile\n\nExample: --repo name=volatile,uri=https://packages.serpentos.com/volatile/x86_64/stone.index,priority=100"
+        long_help = "repository to add to profile\n\nExample: --repo name=volatile,uri=https://packages.serpentos.com/volatile/x86_64/stone.index,arch=x86_64,priority=100"
         )]
         repos: Vec<(repository::Id, Repository)>,
     },
@@ -58,6 +58,11 @@ fn parse_repository(s: &str) -> Result<(repository::Id, Repository), String> {
         .ok_or("missing uri")?
         .parse::<Url>()
         .map_err(|e| e.to_string())?;
+    let arch = key_values
+        .get("arch")
+        .ok_or("x86_64")?
+        .parse::<String>()
+        .map_err(|e| e.to_string())?;
     let priority = key_values
         .get("priority")
         .map(|p| p.parse::<u64>())
@@ -70,6 +75,7 @@ fn parse_repository(s: &str) -> Result<(repository::Id, Repository), String> {
         Repository {
             description: String::default(),
             uri,
+            arch,
             priority: repository::Priority::new(priority),
             active: true,
         },
