@@ -12,7 +12,7 @@ use chrono::{DateTime, Utc};
 use fs_err as fs;
 use thiserror::Error;
 
-use crate::architecture::{self, BuildTarget};
+use crate::{architecture::{self, BuildTarget}, Architecture};
 
 pub type Parsed = stone_recipe::Recipe;
 
@@ -39,17 +39,33 @@ impl Recipe {
         })
     }
 
-    pub fn build_targets(&self) -> Vec<BuildTarget> {
+    pub fn build_targets(&self, repo_arch: String) -> Vec<BuildTarget> {
         let host = architecture::host();
         let host_string = host.to_string();
+
+        let mut arch = architecture::host();
+
+        for a in <Architecture as strum::IntoEnumIterator>::iter() {
+            if a.to_string().contains(&repo_arch) {
+                arch = a;
+            }
+        }
 
         let mut targets = vec![];
         if self.parsed.architectures.is_empty() {
             if self.parsed.emul32 {
-                targets.push(BuildTarget::Emul32(host));
+                if host_string.contains(&repo_arch) {
+                    targets.push(BuildTarget::Emul32(host));
+                } else {
+                    targets.push(BuildTarget::CrossEmul32(arch));
+                }
+                
             }
-
-            targets.push(BuildTarget::Native(host));
+            if host_string.contains(&repo_arch) {
+                targets.push(BuildTarget::Native(host));
+            } else {
+                targets.push(BuildTarget::Cross(arch));
+            }
         } else {
             let emul32 = BuildTarget::Emul32(host);
             let emul32_string = emul32.to_string();

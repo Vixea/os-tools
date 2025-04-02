@@ -63,7 +63,10 @@ impl Builder {
 
         let paths = Paths::new(&recipe, &env.cache_dir, "/mason", output_dir)?;
 
-        let build_targets = recipe.build_targets();
+        let profiles = profile::Manager::new(&env);
+        let repos = profiles.repositories(&profile)?.clone().into_iter().next().unwrap();
+
+        let build_targets = recipe.build_targets(repos.1.arch);
 
         if build_targets.is_empty() {
             return Err(Error::NoBuildTargets);
